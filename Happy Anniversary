@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Happy 45th Anniversary!</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  :root {
+    --navy: #1F4E79;
+    --blue: #2E75B6;
+    --gold: #D4A843;
+    --light-blue: #E8F0FE;
+    --cream: #FFF8F0;
+    --dark: #333;
+    --gray: #666;
+  }
+
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  #envelope-stage {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: opacity 0.6s ease;
+  }
+
+  #envelope-stage.hidden { opacity: 0; pointer-events: none; display: none; }
+
+  .sparkle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    animation: sparkle 1.5s ease-in-out infinite;
+  }
+
+  .sparkle:nth-child(1) { top: 15%; left: 20%; animation-delay: 0s; }
+  .sparkle:nth-child(2) { top: 25%; right: 22%; animation-delay: 0.5s; }
+  .sparkle:nth-child(3) { bottom: 30%; left: 25%; animation-delay: 1s; }
+  .sparkle:nth-child(4) { bottom: 20%; right: 18%; animation-delay: 0.3s; }
+
+  @keyframes sparkle {
+    0%, 100% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1); opacity: 0.8; }
+  }
+
+  .pre-text {
+    color: var(--gold);
+    font-size: 14px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .envelope-wrapper {
+    width: 280px;
+    height: 180px;
+    position: relative;
+    cursor: pointer;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .envelope-body {
+    position: absolute;
+    bottom: 0;
+    width: 280px;
+    height: 160px;
+    background: linear-gradient(180deg, #F5E6D0 0%, #E8D5B7 100%);
+    border-radius: 6px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .envelope-body .name { color: var(--navy); font-size: 14px; font-weight: bold; }
+  .envelope-body .occasion { color: var(--gray); font-size: 10px; margin-top: 4px; }
+
+  .envelope-flap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0; height: 0;
+    border-left: 140px solid transparent;
+    border-right: 140px solid transparent;
+    border-top: 100px solid #E0D0B5;
+    z-index: 3;
+    transform-origin: top center;
+    transition: transform 0.6s ease-in-out;
+  }
+
+  .envelope-flap.open {
+    transform: rotateX(180deg);
+    z-index: 1;
+    border-top-color: #D4C4A8;
+  }
+
+  .seal {
+    position: absolute;
+    top: 62px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--gold) 0%, #B8922E 100%);
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    animation: pulse 2s ease-in-out infinite;
+    color: #fff;
+    font-size: 16px;
+    transition: opacity 0.3s ease;
+  }
+
+  .seal.broken { opacity: 0; pointer-events: none; }
+
+  @keyframes pulse {
+    0%, 100% { transform: translateX(-50%) scale(1); }
+    50% { transform: translateX(-50%) scale(1.05); }
+  }
+
+  .rising-letter {
+    position: absolute;
+    bottom: 40px;
+    left: 20px;
+    width: 240px;
+    height: 140px;
+    background: #fff;
+    border-radius: 4px;
+    z-index: 1;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s ease-out;
+  }
+
+  .rising-letter.show {
+    opacity: 1;
+    transform: translateY(-40px);
+  }
+
+  .rising-letter p {
+    color: var(--navy);
+    font-size: 11px;
+    text-align: center;
+    padding: 10px;
+    line-height: 1.4;
+  }
+
+  .tap-hint {
+    color: rgba(255,255,255,0.5);
+    font-size: 12px;
+    margin-top: 28px;
+    letter-spacing: 1px;
+  }
+
+  .confetti {
+    position: fixed;
+    top: -20px;
+    z-index: 1000;
+    animation: confettiFall linear forwards;
+  }
+
+  @keyframes confettiFall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  #letter-stage {
+    display: none;
+    min-height: 100vh;
+    background: linear-gradient(180deg, var(--cream) 0%, #fff 100%);
+    padding: 20px 16px;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #letter-stage.show { display: flex; }
+
+  .letter-content {
+    max-width: 600px;
+    width: 100%;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease-out;
+  }
+
+  .letter-content.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .header-card {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 28px 20px 20px;
+    background: linear-gradient(135deg, #1F4E79 0%, #2E75B6 100%);
+    border-radius: 12px;
+    color: white;
+    box-shadow: 0 4px 20px rgba(31,78,121,0.3);
+  }
+
+  .header-card .label { font-size: 13px; letter-spacing: 3px; opacity: 0.8; text-transform: uppercase; margin-bottom: 6px; }
+  .header-card h1 { font-size: 26px; margin-bottom: 4px; }
+  .header-card .parents { font-size: 14px; opacity: 0.9; margin-bottom: 10px; }
+  .header-card .divider { width: 60px; height: 2px; background: var(--gold); margin: 0 auto 12px; border-radius: 1px; }
+  .header-card .event { font-size: 16px; font-weight: bold; margin-bottom: 2px; }
+  .header-card .event-detail { font-size: 12px; opacity: 0.85; margin-top: 2px; }
+
+  .card {
+    background: white;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    border: 1px solid #e8e8e8;
+  }
+
+  .card h3 {
+    color: var(--navy);
+    font-size: 14px;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--gold);
+  }
+
+  .flight-info { font-size: 12px; color: var(--dark); line-height: 1.7; }
+  .flight-info p { margin-bottom: 6px; }
+  .flight-info strong { color: var(--navy); }
+
+  .timezone-alert {
+    background: var(--light-blue);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: bold;
+    color: var(--navy);
+    margin-top: 4px;
+  }
+
+  .day-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+
+  .day-tab {
+    flex: 1;
+    padding: 10px 8px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    font-family: Georgia, serif;
+    background: white;
+    color: var(--navy);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    text-align: center;
+  }
+
+  .day-tab.active {
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(31,78,121,0.3);
+  }
+
+  .day-panel { display: none; }
+  .day-panel.active { display: block; }
+
+  .day-panel h3 { color: var(--navy); font-size: 15px; margin-bottom: 2px; border: none; padding: 0; }
+  .day-panel .subtitle { color: var(--blue); font-size: 12px; font-style: italic; margin-bottom: 12px; }
+
+  .schedule-item {
+    display: flex;
+    gap: 12px;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .schedule-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+  .schedule-time {
+    min-width: 70px;
+    font-size: 11px;
+    font-weight: bold;
+    color: var(--navy);
+    padding-top: 1px;
+  }
+
+  .schedule-title { font-size: 13px; font-weight: bold; color: var(--dark); margin-bottom: 3px; }
+  .schedule-detail { font-size: 11px; color: var(--gray); line-height: 1.5; }
+
+  .tips-card {
+    background: var(--light-blue);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 14px;
+    border: 1px solid rgba(46,117,182,0.2);
+  }
+
+  .tips-card h3 { color: var(--navy); font-size: 13px; margin-bottom: 8px; border: none; padding: 0; }
+  .tips-card p { font-size: 11px; color: var(--dark); line-height: 1.7; margin-bottom: 4px; }
+  .tips-card p:last-child { margin-bottom: 0; }
+
+  .pack-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pack-tag {
+    background: #f5f5f5;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    color: var(--dark);
+  }
+
+  .closing {
+    text-align: center;
+    padding: 20px 16px;
+    margin-bottom: 20px;
+  }
+
+  .closing .divider { width: 60px; height: 2px; background: var(--gold); margin: 0 auto 14px; border-radius: 1px; }
+  .closing .main { font-size: 18px; color: var(--navy); font-weight: bold; margin-bottom: 6px; }
+  .closing .anniv { font-size: 16px; color: var(--navy); margin-bottom: 4px; }
+  .closing .love { font-size: 14px; color: var(--gray); font-style: italic; }
+</style>
+</head>
+<body>
+
+<div id="envelope-stage">
+  <div class="sparkle"></div>
+  <div class="sparkle"></div>
+  <div class="sparkle"></div>
+  <div class="sparkle"></div>
+
+  <p class="pre-text">A Special Surprise</p>
+
+  <div class="envelope-wrapper" id="envelope" onclick="openEnvelope()">
+    <div class="envelope-body">
+      <div>
+        <div class="name">Mom &amp; Dad</div>
+        <div class="occasion">Happy 45th Anniversary</div>
+      </div>
+    </div>
+    <div class="envelope-flap" id="flap"></div>
+    <div class="seal" id="seal">&#9829;</div>
+    <div class="rising-letter" id="rising-letter">
+      <p>&#10024; Las Vegas, here we come! &#10024;</p>
+    </div>
+  </div>
+
+  <p class="tap-hint">Tap the envelope to open</p>
+</div>
+
+<div id="letter-stage">
+  <div class="letter-content" id="letter-content">
+
+    <div class="header-card">
+      <div class="label">Celebrating 45 Years</div>
+      <h1>Happy Anniversary!</h1>
+      <div class="parents">Mom &amp; Dad</div>
+      <div class="divider"></div>
+      <div class="event">&#127928; Eagles &mdash; Live at the Sphere</div>
+      <div class="event-detail">Saturday, February 28, 2026 &bull; 8:30 PM</div>
+      <div class="event-detail">Las Vegas, Nevada &bull; Feb 27 &ndash; Mar 1</div>
+    </div>
+
+    <div class="card">
+      <h3>&#9992;&#65039; Flight Details</h3>
+      <div class="flight-info">
+        <p><strong>Going:</strong> Delta DL4485/DL0421 &mdash; BUF &rarr; DTW &rarr; LAS<br>
+           Depart 10:29 AM ET &bull; Arrive 2:08 PM PT</p>
+        <p><strong>Return:</strong> Southwest 1731/4736 &mdash; LAS &rarr; MDW &rarr; BUF<br>
+           Depart 1:25 PM PT &bull; Arrive 10:10 PM ET (change planes in Chicago)</p>
+        <div class="timezone-alert">&#9200; Las Vegas is 3 HOURS BEHIND Buffalo</div>
+      </div>
+    </div>
+
+    <div class="day-tabs">
+      <div class="day-tab active" onclick="showDay(0)">Fri 27</div>
+      <div class="day-tab" onclick="showDay(1)">Sat 28 &#11088;</div>
+      <div class="day-tab" onclick="showDay(2)">Sun 1</div>
+    </div>
+
+    <div class="card day-panel active" id="day-0">
+      <h3>Day 1 &mdash; Friday, Feb 27</h3>
+      <div class="subtitle">Travel Day</div>
+
+      <div class="schedule-item">
+        <div class="schedule-time">~7:30 AM</div>
+        <div>
+          <div class="schedule-title">Head to Airport</div>
+          <div class="schedule-detail">Arrive at BUF by 8:30 AM &mdash; at least 2 hours before your 10:29 AM departure.</div>
+        </div>
+      </div>
+
+      <div class="schedule-item">
+        <div class="schedule-time">10:29 AM</div>
+        <div>
+          <div class="schedule-title">Depart Buffalo &mdash; Delta DL4485</div>
+          <div class="schedule-detail">Fly to Detroit (DTW), arrive 11:45 AM. Connect to DL0421 departing 12:32 PM. ~47 min connection &mdash; head straight to next gate. No re-security needed.</div>
+        </div>
+      </div>
+
+      <div class="schedule-item">
+        <div class="schedule-time">~2:08 PM</div>
+        <div>
+          <div class="schedule-title">Arrive Las Vegas!</div>
+          <div class="schedule-detail">Vegas is 3 hrs behind Buffalo. Your body says 5:08 PM &mdash; it&rsquo;s only 2:08 PM. Whole afternoon ahead!</div>
+        </div>
+      </div>
+
+      <div class="schedule-item">
+        <div class="schedule-time">2:15 PM</div>
+        <div>
+          <div class="schedule-title">Uber to The Venetian</div>
+          <div class="schedule-detail">Follow signs to Ride Share pickup (Level 2 of parking garage). Open Uber &rarr; type &ldquo;The Venetian Resort Las Vegas&rdquo; &rarr; choose UberX &rarr; confirm. ~15&ndash;20 min ride, ~$15&ndash;25. No cash needed.</div>
+        </div>
+      </div>
+
+      <div class="schedule-item">
+        <div class="schedule-time">~3:00 PM</div>
+        <div>
+          <div class="schedule-title">Check In at The Venetian Palazzo</div>
+          <div class="schedule-detail">Your room will be ready (check-in is 3 PM). Show ID and reservation confirmation at front desk.</div>
+        </div>
+      </div>
+
+      <div class="schedule-item">
+        <div class="schedule-time">Evening</div>
+        <div>
+          <div class="schedule-title">Relax &amp; Dinner</div>
+          <div class="schedule-detail">Explore the resort and grab dinner &mdash; plenty of restaurants inside The Venetian.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card day-panel" id="day-1">
+      <h3>Day 2 &mdash; Saturday, Feb 28</h3>
+      <div class="subtitle">&#11088; Happy Anniversary! Eagles Night! &#11088;</div>
+
+      <div class="schedule-item">
+        <div class="schedule-time">Morning</div>
+        <div>
+          <div class="schedule-title">Sleep In &amp; Breakfast</div>
+          <div class="schedule-detail">Grand Lux Cafe inside the hotel, or room service. No rush today!</div>
+        </div>
+      </div>
+
+      <div class="schedule-item">
+        <div class="schedule-time">Daytime</div>
+        <div>
+          <div class="schedule-title">Explore</div>
+          <div class="schedule-detail">Walk the Strip, Grand Canal Shoppes (indoor canals!), or the free Eagles &ldquo;Third Encore&rdquo; exhibit at the Summit Showroom.</div>
+        </div>
+      </div>
+
+      <div class="schedule-item">
+        <div class="schedule-time">6:30 PM</div>
+        <div>
+          <div class="schedule-title">Anniversary Dinner</div>
+          <div class="schedule-detail">Dine inside The Venetian &mdash; TAO Asian Bistro, Bouchon Bistro, or Matteo&rsquo;s.</div>
+        </div>
+      </div>
+
+      <div class="schedule-item">
+        <div class="schedule-time">7:45 PM</div>
+        <div>
+          <div class="schedule-title">Walk to the Sphere</div>
+          <div class="schedule-detail">DIRECTLY CONNECTED to The Venetian via indoor walkway. No Uber needed!</div>
+        </div>
+      </div>
+
+      <div class="schedule-item">
+        <div class="schedule-time">8:30 PM</div>
+        <div>
+          <div class="schedule-title">&#127928; Eagles &mdash; Live in Concert!</div>
+          <div class="schedule-detail">~2.5&ndash;3 hours. The screen wraps the entire audience. ARRIVE BY 8:15 PM &mdash; strictly enforced entry cutoff.</div>
+        </div>
+      </div>
+
+      <div class="schedule-item">
+        <div class="schedule-time">~11 PM</div>
+        <div>
+          <div class="schedule-title">Walk Back to Hotel</div>
+          <div class="schedule-detail">Same indoor route. Your room is a short walk from the Sphere.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card day-panel" id="day-2">
+      <h3>Day 3 &mdash; Sunday, Mar 1</h3>
+      <div class="subtitle">Departure Day</div>
+
+      <div class="schedule-item">
+        <div class="schedule-time">Morning</div>
+        <div>
+          <div class="schedule-title">Breakfast &amp; Check Out</div>
+          <div class="schedule-detail">Check-out by 11 AM. Enjoy a final breakfast. Front desk can hold luggage.</div>
+        </div>
+      </div>
+
+      <div class="schedule-item">
+        <div class="schedule-time">~10:30 AM</div>
+        <div>
+          <div class="schedule-title">Uber to Airport</div>
+          <div class="schedule-detail">Same Uber process. Aim to arrive by 11:00&ndash;11:30 AM. Southwest is in Terminal 1.</div>
+        </div>
+      </div>
+
+      <div class="schedule-item">
+        <div class="schedule-time">1:25 PM</div>
+        <div>
+          <div class="schedule-title">Depart Las Vegas &mdash; SW 1731/4736</div>
+          <div class="schedule-detail">Fly to Chicago Midway (CHANGE PLANES &mdash; check screens for next gate). Bags transfer automatically.</div>
+        </div>
+      </div>
+
+      <div class="schedule-item">
+        <div class="schedule-time">10:10 PM</div>
+        <div>
+          <div class="schedule-title">Arrive Buffalo!</div>
+          <div class="schedule-detail">Welcome home! 5 hr 45 min total travel time.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tips-card">
+      <h3>&#128161; Important Tips</h3>
+      <p>&bull; <strong>Sphere entry cutoff is 8:15 PM</strong> &mdash; arrive early, strictly enforced</p>
+      <p>&bull; Detroit connection: ~47 min, head straight to gate, no re-security</p>
+      <p>&bull; Chicago return: change planes at Midway, bags transfer automatically</p>
+      <p>&bull; If Uber is confusing, take a TAXI &mdash; well-marked at baggage claim, ~$20&ndash;30</p>
+      <p>&bull; Sphere is connected to The Venetian &mdash; indoor walk, no Uber needed</p>
+      <p>&bull; Pack medications in carry-on, not checked bag</p>
+    </div>
+
+    <div class="card">
+      <h3 style="border-bottom:none; padding-bottom:0; margin-bottom:8px;">&#129523; Don&rsquo;t Forget</h3>
+      <div class="pack-tags">
+        <span class="pack-tag">Photo ID</span>
+        <span class="pack-tag">Phone charger</span>
+        <span class="pack-tag">Comfortable shoes</span>
+        <span class="pack-tag">Light jacket</span>
+        <span class="pack-tag">Medications</span>
+        <span class="pack-tag">Concert tickets</span>
+        <span class="pack-tag">Hotel confirmation</span>
+        <span class="pack-tag">Credit/debit card</span>
+      </div>
+    </div>
+
+    <div class="closing">
+      <div class="divider"></div>
+      <div class="main">Have an amazing trip!</div>
+      <div class="anniv">Happy 45th Anniversary! &#128155;</div>
+      <div class="love">Love, Joe &amp; Heidi, Jessica &amp; Paris</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  var opened = false;
+
+  function openEnvelope() {
+    if (opened) return;
+    opened = true;
+
+    document.getElementById('seal').classList.add('broken');
+
+    setTimeout(function() {
+      document.getElementById('flap').classList.add('open');
+    }, 400);
+
+    setTimeout(function() {
+      document.getElementById('rising-letter').classList.add('show');
+    }, 900);
+
+    setTimeout(function() {
+      document.getElementById('envelope-stage').classList.add('hidden');
+      document.getElementById('letter-stage').classList.add('show');
+      launchConfetti();
+      setTimeout(function() {
+        document.getElementById('letter-content').classList.add('show');
+      }, 200);
+    }, 1800);
+  }
+
+  function showDay(index) {
+    var tabs = document.querySelectorAll('.day-tab');
+    var panels = document.querySelectorAll('.day-panel');
+    for (var i = 0; i < tabs.length; i++) {
+      if (i === index) {
+        tabs[i].classList.add('active');
+        panels[i].classList.add('active');
+      } else {
+        tabs[i].classList.remove('active');
+        panels[i].classList.remove('active');
+      }
+    }
+  }
+
+  function launchConfetti() {
+    var colors = ['#D4A843', '#2E75B6', '#1F4E79', '#E8D5B7', '#fff', '#F0C75E'];
+    for (var i = 0; i < 60; i++) {
+      var el = document.createElement('div');
+      el.classList.add('confetti');
+      el.style.left = Math.random() * 100 + '%';
+      el.style.width = (4 + Math.random() * 8) + 'px';
+      el.style.height = (4 + Math.random() * 8) + 'px';
+      el.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      el.style.background = colors[Math.floor(Math.random() * colors.length)];
+      el.style.animationDuration = (2 + Math.random() * 2) + 's';
+      el.style.animationDelay = (Math.random() * 0.8) + 's';
+      document.body.appendChild(el);
+      setTimeout((function(e) { return function() { e.remove(); }; })(el), 5000);
+    }
+  }
+</script>
+</body>
+</html>
