@@ -24,11 +24,93 @@ min-height: 100vh;
 overflow-x: hidden;
 }
 
+/* ===== PASSWORD STAGE ===== */
+#password-stage {
+min-height: 100vh;
+background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+padding: 20px;
+}
+
+#password-stage.hidden { display: none; }
+
+.pw-box {
+text-align: center;
+max-width: 340px;
+width: 100%;
+}
+
+.pw-box .lock-icon {
+font-size: 40px;
+margin-bottom: 16px;
+}
+
+.pw-box h2 {
+color: #fff;
+font-size: 20px;
+margin-bottom: 6px;
+}
+
+.pw-box .pw-sub {
+color: rgba(255,255,255,0.6);
+font-size: 13px;
+margin-bottom: 24px;
+}
+
+.pw-box input {
+width: 100%;
+padding: 12px 16px;
+border: 2px solid rgba(255,255,255,0.2);
+border-radius: 8px;
+background: rgba(255,255,255,0.1);
+color: #fff;
+font-family: Georgia, serif;
+font-size: 16px;
+text-align: center;
+outline: none;
+transition: border-color 0.3s ease;
+margin-bottom: 12px;
+}
+
+.pw-box input::placeholder { color: rgba(255,255,255,0.4); }
+.pw-box input:focus { border-color: var(–gold); }
+
+.pw-box button {
+width: 100%;
+padding: 12px;
+border: none;
+border-radius: 8px;
+background: linear-gradient(135deg, var(–gold) 0%, #B8922E 100%);
+color: #fff;
+font-family: Georgia, serif;
+font-size: 14px;
+font-weight: bold;
+cursor: pointer;
+letter-spacing: 1px;
+transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pw-box button:hover { transform: scale(1.02); box-shadow: 0 4px 16px rgba(212,168,67,0.4); }
+.pw-box button:active { transform: scale(0.98); }
+
+.pw-error {
+color: #ff6b6b;
+font-size: 12px;
+margin-top: 10px;
+opacity: 0;
+transition: opacity 0.3s ease;
+}
+
+.pw-error.show { opacity: 1; }
+
 /* ===== ENVELOPE STAGE ===== */
 #envelope-stage {
 min-height: 100vh;
 background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-display: flex;
+display: none;
 flex-direction: column;
 align-items: center;
 justify-content: center;
@@ -36,7 +118,8 @@ position: relative;
 transition: opacity 0.6s ease;
 }
 
-#envelope-stage.hidden { opacity: 0; pointer-events: none; display: none; }
+#envelope-stage.show { display: flex; }
+#envelope-stage.hidden { display: none !important; }
 
 .sparkle {
 position: absolute;
@@ -365,6 +448,19 @@ margin-bottom: 20px;
 </head>
 <body>
 
+<!-- PASSWORD STAGE -->
+
+<div id="password-stage">
+  <div class="pw-box">
+    <div class="lock-icon">&#128272;</div>
+    <h2>This page is private</h2>
+    <div class="pw-sub">Enter the password to continue</div>
+    <input type="password" id="pw-input" placeholder="Enter password" onkeydown="if(event.key==='Enter')checkPassword()">
+    <button onclick="checkPassword()">UNLOCK</button>
+    <div class="pw-error" id="pw-error">Incorrect password. Please try again.</div>
+  </div>
+</div>
+
 <!-- ENVELOPE STAGE -->
 
 <div id="envelope-stage">
@@ -618,6 +714,21 @@ margin-bottom: 20px;
 <script>
   let opened = false;
 
+  function checkPassword() {
+    var input = document.getElementById('pw-input').value;
+    if (input === 'surprise45') {
+      document.getElementById('password-stage').classList.add('hidden');
+      document.getElementById('envelope-stage').classList.add('show');
+    } else {
+      document.getElementById('pw-error').classList.add('show');
+      document.getElementById('pw-input').value = '';
+      document.getElementById('pw-input').focus();
+      setTimeout(function() {
+        document.getElementById('pw-error').classList.remove('show');
+      }, 3000);
+    }
+  }
+
   function openEnvelope() {
     if (opened) return;
     opened = true;
@@ -637,6 +748,7 @@ margin-bottom: 20px;
 
     // Transition to letter
     setTimeout(() => {
+      document.getElementById('envelope-stage').classList.remove('show');
       document.getElementById('envelope-stage').classList.add('hidden');
       document.getElementById('letter-stage').classList.add('show');
       launchConfetti();
